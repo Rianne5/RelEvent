@@ -12,6 +12,8 @@ The project is created using:
 
 See `requirements.txt`, `package.json` and `documentation/venv packages.txt` for more details.
 
+The dataset is RealityMining by N. Eagle, A. Pentland, and D. Lazer (2009), "Inferring Social Network Structure using Mobile Phone Data", Proceedings of the National Academy of Sciences, 106(36), pp. 15274-15278. The exact preprocessing steps can be found in a seperate [repository](https://github.com/Rianne5/PreprocessingRelEvent).
+
 Create new environment with Python 3.11.6 and install ``requirements.txt``
 <!-- Create environment when choosing python interpreter in Visual Studio Code or run ``python -m venv /path/to/new/virtual/environment`` or  conda create -n name_env python 3.11.6` and `conda activate name_env`-->
 <!-- pip install -r requirements.txt -->
