@@ -1,0 +1,69 @@
+  /* general RangeSlider styling */
+  #label_d_slider.rangeSlider {
+    font-size: 12px;
+  }
+
+  #label_d_slider.rangeSlider.focus .rangeBar {
+    background: linear-gradient(to left, var(--handle) 20%, var(--handle-focus));
+  }
+
+  #label_d_slider.rangeSlider.focus:has([data-handle="1"].active) .rangeBar {
+    background: linear-gradient(to right, var(--handle) 20%, var(--handle-focus));
+  }
+
+  /* Move the floating label on top of the handle */
+  
+  #label_d_slider.rangeSlider .rangeHandle {
+    width: 2.8em;
+    height: 2.8em;
+    background: none;
+  }
+
+  #label_d_slider.rangeSlider .rangeFloat {
+    opacity: 1;
+    background: transparent;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  /* Make the handles look like Squircles */
+
+  #label_d_slider.rangeSlider .rangeHandle .rangeNub {
+    border-radius: 0;
+    transform: translate(0, 0);
+    mask-image: url("data:image/svg+xml;utf8, %3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E %3Cpath d=' M 100,0 C 22.460000000000008,0 0,22.460000000000008 0,100  0,177.54 22.460000000000008,200 100,200  177.54,200 200,177.54 200,100  200,22.460000000000008 177.54,0 100,0 ' style='fill: black;'%3E%3C/path%3E %3C/svg%3E");
+    mask-size: cover;
+  }
+
+  /* Hide the pips, and values when selected */
+  
+  #label_d_slider.rangeSlider .pip {
+    background: transparent;
+  }
+
+  #label_d_slider.rangeSlider .pip.selected .pipVal {
+    opacity: 0;
+    transition: all 0.25s ease;
+  }
+/*  #38433a; */
+  :root {
+    --range-slider:            hsl(320, 4%, 85%);  /* Background bar */
+    --range-handle-inactive:   hsl(180, 4.6%, 61.8%);
+    --range-handle:            #5B6A5E;
+    --range-handle-focus:      #5B6A5E;
+    --range-handle-border:     hsl(180, 4.6%, 61.8%);
+    --range-range-inactive:    hsl(180, 4.6%, 61.8%);
+    --range-range:             hsl(244.1, 63.2%, 54.1%);
+    /* --range-float-inactive:    hsl(180, 4.6%, 61.8%); */ /* Float background above slider */
+    /* --range-float:             hsl(36, 63%, 54%); */ /* Float background above slider */
+    --range-float-text:        hsl(0, 0%, 100%);
+
+    /* --range-pip:               hsl(210, 14.3%, 53.3%);
+    --range-pip-text:          hsl(210, 14.3%, 53.3%);
+    --range-pip-active:        hsl(180, 25.4%, 24.7%);
+    --range-pip-active-text:   hsl(180, 25.4%, 24.7%);
+    --range-pip-hover:         hsl(180, 25.4%, 24.7%);
+    --range-pip-hover-text:    hsl(180, 25.4%, 24.7%);
+    --range-pip-in-range:      hsl(180, 25.4%, 24.7%);
+    --range-pip-in-range-text: hsl(180, 25.4%, 24.7%); */
+  }

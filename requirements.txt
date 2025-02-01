@@ -1,0 +1,6 @@
+Flask 
+Flask-restful
+flask-cors
+pandas
+neo4j
+networkx
