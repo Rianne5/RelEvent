@@ -1,5 +1,5 @@
 <svelte:head>
-	<title>About</title>
+	<title>RelEvent</title>
 	<meta name="description" content="Beta version of prototype" />
 	
 	<script src="https://d3js.org/d3.v7.js" charset="utf-8"></script>
@@ -1027,15 +1027,46 @@
 		// *************************************************************
 		
 		//capitalize first letter
-		function capString(string) {return string.charAt(0).toUpperCase() + string.slice(1).replaceAll('_', ' ');}
-		function reCapString(string) {return string.charAt(0).toLowerCase() + string.slice(1).replaceAll(' ', '_');}
+		function capString(string) {if (string === 'TBR') {return 'Unknown';} else{return string.charAt(0).toUpperCase() + string.slice(1).replaceAll('_', ' ');}}
+		function reCapString(string) {if (string === 'Unknown') {return 'TBR';} else{return string.charAt(0).toLowerCase() + string.slice(1).replaceAll(' ', '_');}}
 
 		// small functions
 		async function process(input) {
 			out = await input
 			out.nodes.forEach(function(d) {d.date = d3.timeParse("%Y-%m-%d %H:%M:%S")(d.date)})
+			process_unknown(out)
 			return out
 		}
+
+		async function process_unknown(input){
+			out = await input
+			out.nodes.forEach(function(d) {Object.keys(d).forEach(function(header) {if (d[header] === 'TBR') {d[header] = 'Unknown';}});});
+			console.log('process_unknown', out.nodes)
+			return out
+		}
+		// async function process_u(out){
+		// 	// out = await input
+		// 	out.forEach(function(d) {Object.keys(d).forEach(function(header) {if (d[header] === 'TBR') {d[header] = 'Unknown';}});});
+		// 	return out
+		// }
+
+		async function process_u(out) {
+			// out = await input
+			out.forEach(function(d) {
+				try {
+				if (d && typeof d === 'object') { // Ensure d is a valid object
+					Object.keys(d).forEach(function(header) {
+					if (d[header] === 'TBR') {
+						d[header] = 'Unknown';
+					}
+					});
+				}
+				} catch (error) {
+				console.error("Error processing row:", d, error);
+				}
+			});
+			return out;
+			}
 
 		function queryChecks(){
 			let result = []
@@ -1060,7 +1091,7 @@
 		var b_seq_rel= "Friendship"
 		var b_event_order = "Event_Friendship"
 		var s_filter_list = "[[]]"
-		var attribute_list = [9]
+		var attribute_list = [9,6]
 		// var attribute_list = [...Array(106).keys()];
 
 		//svg
@@ -1073,6 +1104,7 @@
 		var out_event = post('event')
 		var out_event = process(out_event)
 		var out_seq = post('Friendship')
+		var out_set = process_unknown(out_seq)
 		var list = highlight_selection(out_event)
 		console.log('list from highlight selection', list)
 		// checks
@@ -1122,7 +1154,7 @@
 		d3.select('#selectSeqAttr').on("change", function (d){
             b_seq_rel = d3.select(this).property("value")
 			console.log('s_filter_list', s_filter_list)
-			out_seq = post('filter', b_seq_rel, attr_filter = s_filter_list)
+			out_seq = process_unknown(post('filter', b_seq_rel, attr_filter = s_filter_list))
 			arc(out_seq, svg_seq, b_seq_col, shape='circle', order_str=b_seq_rel, list_high=list, chart_type="seq")  
 			// update event order too
 			b_event_order = "Event_"+b_seq_rel
@@ -1156,7 +1188,7 @@
 			s_filter_list = JSON.stringify(filter_list)
 			console.log('json', (s_filter_list)) ///Note:attention ordering of words no updated in selection.
 
-			out_seq = post('filter', b_seq_rel, attr_filter = s_filter_list)
+			out_seq = process_unknown(post('filter', b_seq_rel, attr_filter = s_filter_list))
 			arc(out_seq, svg_seq, b_seq_col, shape='circle', order_str=b_seq_rel, list_high=list, chart_type="seq")
 		
 			out_event = post('filter', 'event', s_filter_list)
@@ -1198,7 +1230,7 @@
 
 			var sortAlphaNum = (a, b) => a.toString().localeCompare(b.toString(), 'en', { numeric: true }) //sorting method
 			
-			var SORT_ORDER = {"Strongly agree": 6, "Agree": 5, "Somewhat agree": 4, "Neutral": 3, "Somewhat disagree":2, "Disagree":1, "Strongly disagree":0, "yes":-1, "no":-2, "Unknown": -1000, "TBR": -10000}
+			var SORT_ORDER = {"Strongly agree": 6, "Agree": 5, "Somewhat agree": 4, "Neutral": 3, "Somewhat disagree":2, "Disagree":1, "Strongly disagree":0, "yes":-1, "no":-2, "Unknown": -1000, "TBR": -10000, "Missing": -100000}
 			
 			function S_ORDER(a, b){
 				if(SORT_ORDER[a[0]]<=SORT_ORDER[b[0]])
@@ -1214,7 +1246,7 @@
 					.append("text")
 						.attr("x", padding_width)
 						.attr("y", height)
-						.text("Case attributes")
+						.text("Sequence attributes")
 						.attr("text-anchor", "left")
 						// .style("font-size", "px")
 
@@ -1222,7 +1254,7 @@
 			for (var el of Object.keys(data[1])){
 				// var inner_svg = svg.append('svg').attr("id", "inner")
 				var inner_svg = svg.append("svg").attr("id", el) //g is also possible 
-				rolls = d3.rollups(data, (d) => d.length, (d) => d[el]).filter(function(d){return d[0] != "TBR" })//.map(function(d){if(d[0]=="TBR"){return ["Unknown",...d.splice(1)]} else {return d}})//.filter(function(d){return d[0] != "TBR" })				
+				rolls = d3.rollups(data, (d) => d.length, (d) => d[el])//.filter(function(d){return d[0] != "TBR" })//.map(function(d){if(d[0]=="TBR"){return ["Unknown",...d.splice(1)]} else {return d}})//.filter(function(d){return d[0] != "TBR" })				
 				rolls = rolls.sort(sortAlphaNum) // sorting rolls alphabetically to sort bar charts. Done here for brushing etc.
 				// console.log('el, rolls', el, rolls)
 				try{rolls = rolls.sort(S_ORDER)}
@@ -1293,6 +1325,8 @@
 				inner_svg.append("g").attr("transform", "translate(" + text_width + "," + axis_height + ")").call(axis)
 					.selectAll("text")
 						.style("font-size", "8px")
+						.text(function(d){if(d === "TBR"){return "Unknown"}else{return d}})
+				console.log('axis', axis)
 					
 				inner_svg.property("value", []).dispatch("input"); // set global value for property
 
@@ -1303,8 +1337,10 @@
 					var inner_svg = d3.select("#case").select( `#${label}`)
 					var rect = d3.select(this.parentNode).selectAll("rect") // all bars in bar_chart
 					if (selection) {  // color selection and add to svg properties
-						rolls = d3.rollups(data, (d) => d.length, (d) => d[label]).filter(function(d){return d[0] != "TBR" })//.map(function(d){if(d[0]=="TBR"){return ["Unknown",...d.splice(1)]} else {return d}}).sort(sortAlphaNum)
+						rolls = d3.rollups(data, (d) => d.length, (d) => d[label])//.filter(function(d){return d[0] != "TBR" })//.map(function(d){if(d[0]=="TBR"){return ["Unknown",...d.splice(1)]} else {return d}}).sort(sortAlphaNum)
 						rolls = rolls.sort(sortAlphaNum) // sorting rolls alphabetically to sort bar charts. Done here for brushing etc.
+						try{rolls = rolls.sort(S_ORDER)}
+						catch{console.log('NO sorting')}
 						x = d3.scaleBand().range([0, chart_width]).domain(rolls.map(d => d[0])).padding(0.2);
 						
 						const range = x.domain().map(x);
@@ -1337,6 +1373,8 @@
 			//Case attribute view
 			var data = await out_singles
 				svg = d3.select("#case")
+			// var data = process_u(data)
+			console.log('barChart data', data)
 
 			// button case attribute to color sequence relation nodes
 			d3.select("#selectSeqCol")

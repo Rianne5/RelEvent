@@ -135,7 +135,7 @@ class RM_small(Resource):
     seq_attr = RM_small.load_data("./src/data/sequence_attributeV3.csv")
     seq_attr = seq_attr.fillna('TBR') # To Be Replaced
     attr = dict(zip(seq_attr.id, seq_attr.to_dict(orient='records') ))
-    attr = {s: {k: v for k, v in d.items() if v != 'TBR'} for s, d in attr.items()}
+    attr = {s: {k: v for k, v in d.items()} for s, d in attr.items()}
      
     if b_seq_rel == "All_Seq":
       n_friends = pd.read_csv("./src/data/network_friends.csv")
@@ -176,7 +176,7 @@ class RM_small(Resource):
     selection.append(107)
 
     attr = dict(zip(seq_attr.id, seq_attr.to_dict(orient='records') ))
-    attr = {s: {k: v for k, v in d.items() if v != 'TBR'} for s, d in attr.items()}
+    attr = {s: {k: v for k, v in d.items()} for s, d in attr.items()}
      
     if b_seq_rel == "All_Seq":
       n_friends = pd.read_csv("./src/data/network_friends.csv")
